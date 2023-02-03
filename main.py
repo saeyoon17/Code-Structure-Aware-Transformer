@@ -5,7 +5,7 @@ from pathlib import Path
 from py_config_runner import ConfigObject
 
 # from ax.service.managed_loop import optimize
-from script import run_method, run_summary
+from script import run_summary
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Example application")
@@ -36,5 +36,3 @@ if __name__ == "__main__":
     print("start running")
     if args.exp_type == "summary":
         run_summary(config)
-    elif args.exp_type == "method":
-        run_method(config)
