@@ -221,7 +221,7 @@ class MyAst:
 
         rfl = MyAst.__get_labels(root_first_seq)
         MyAst.__sub_tree(root_first_seq[0], max_size)
-
+        G = MyAst.build_networkx_graph(root_first_seq)
         root_first_level = get_node_levels(root_first_seq)
         root_first_level = root_first_level + [0 for i in range(max_size - len(root_first_seq))]
 
