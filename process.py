@@ -52,7 +52,7 @@ def process(data_dir, max_len, output_path, lang):
     next_asts_num = len(asts)
     print(f"filtered {prev_asts_num - next_asts_num} asts")
 
-    root_list = MyAst.process_ast(asts, split_leaf=True, max_size=max_len)
+    root_list = MyAst.process_ast(asts, max_size=max_len)
     MyAst.collect_matrices_and_save(
         root_list,
         output_path + "split_matrices.npz",

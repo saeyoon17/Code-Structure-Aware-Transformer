@@ -45,11 +45,11 @@ class Node:
 
 class MyAst:
     @staticmethod
-    def process_ast(asts, split_leaf=False, max_size=-1):
+    def process_ast(asts, max_size=-1):
         parallel = joblib.Parallel(n_jobs=n_jobs)
         func = joblib.delayed(MyAst.__process_treesitter)
 
-        root_nodes = parallel(func(ast, split_leaf, max_size) for ast in tqdm(asts, desc=f"process AST: split leaf {split_leaf} size {max_size}"))
+        root_nodes = parallel(func(ast, max_size) for ast in tqdm(asts, desc=f"process AST: split leaf {split_leaf} size {max_size}"))
         return root_nodes
 
     @staticmethod
