@@ -3,8 +3,6 @@ import json
 import os
 
 from tqdm import tqdm
-
-from dataset import clean_nl
 from my_ast import MyAst
 from utils.vocab import create_vocab
 
