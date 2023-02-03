@@ -218,9 +218,6 @@ def create_vocab(data_dir):
         get_node_triplet(ast[0])
         rftriplet = [e.node_triplet for e in ast]
         triplets.append(rftriplet)
-        import ipdb
-
-        ipdb.set_trace()
     pos_vocab = Vocab(need_bos=False, file_path=f"node_triplet_dictionary_{lang}.pt")
     pos_vocab.generate_dict(triplets)
 
