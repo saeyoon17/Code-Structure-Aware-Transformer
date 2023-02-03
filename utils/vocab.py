@@ -153,6 +153,7 @@ def load_vocab(data_dir, data_type, ctvocab=False):
 
 def create_vocab(data_dir):
     lang = "java" if "java" in data_dir else "python"
+    print(lang)
     # create vocab
     log.info("init vocab")
     output_dir = data_dir + "vocab/"
