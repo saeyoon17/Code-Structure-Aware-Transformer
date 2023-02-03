@@ -152,6 +152,7 @@ def load_vocab(data_dir, data_type, ctvocab=False):
 
 
 def create_vocab(data_dir):
+    lang = "java" if "java" in data_dir else "python"
     # create vocab
     log.info("init vocab")
     output_dir = data_dir + "vocab/"
@@ -172,16 +173,6 @@ def create_vocab(data_dir):
     split_ast_vocab = Vocab(need_bos=False, file_path=output_dir + "split_ast_vocab.pkl")
     split_ast_vocab.generate_dict(split_ast_tokens, 10000)
 
-    # ident_tokens = []
-    # with open(data_dir + "train/" + "idents.seq", "r") as f:
-    #     for line in tqdm(f.readlines(), desc="loading ast from train ...."):
-    #         ident_tokens.append([e for e in eval(line)])
-    # with open(data_dir + "dev/" + "idents.seq", "r") as f:
-    #     for line in tqdm(f.readlines(), desc="loading ast from dev ...."):
-    #         ident_tokens.append([e for e in eval(line)])
-    # ident_vocab = Vocab(need_bos=False, file_path=output_dir + "ident_vocab.pkl")
-    # ident_vocab.generate_dict(ident_tokens)
-
     nl_tokens = []
     with open(data_dir + "train/nl.original", "r") as f:
         for line in tqdm(f.readlines(), desc="loading nl from train ...."):
@@ -192,44 +183,43 @@ def create_vocab(data_dir):
     nl_vocab = Vocab(need_bos=True, file_path=output_dir + "nl_vocab.pkl")
     nl_vocab.generate_dict(nl_tokens, 20000)
 
-    # def update_node_child_idx(root_node):
-    #     for idx, e in enumerate(root_node.children):
-    #         if e.label.split(":")[0] == "idx":
-    #             e.child_idx = -1
-    #         else:
-    #             e.child_idx = idx
-    #         update_node_child_idx(e)
+    def update_node_child_idx(root_node):
+        for idx, e in enumerate(root_node.children):
+            if e.label.split(":")[0] == "idx":
+                e.child_idx = -1
+            else:
+                e.child_idx = idx
+            update_node_child_idx(e)
 
-    # def get_node_triplet(root_node):
-    #     for idx, e in enumerate(root_node.children):
-    #         e.node_triplet = str((e.level, e.parent.child_idx, e.child_idx))
-    #         get_node_triplet(e)
+    def get_node_triplet(root_node):
+        for idx, e in enumerate(root_node.children):
+            e.node_triplet = str((e.level, e.parent.child_idx, e.child_idx))
+            get_node_triplet(e)
 
-    # train_processed_path = "../cbgt/processed/tree_sitter_java/train/split_matrices.npz"
-    # dev_processed_path = "../cbgt/processed/tree_sitter_java/dev/split_matrices.npz"
+    train_processed_path = f"./processed/tree_sitter_{lang}/train/split_matrices.npz"
+    dev_processed_path = f"./processed/tree_sitter_{lang}/dev/split_matrices.npz"
 
-    # import numpy as np
+    import numpy as np
 
-    # train_data = np.load(train_processed_path, allow_pickle=True)
-    # train_rfs = train_data["root_first_seq"]
+    train_data = np.load(train_processed_path, allow_pickle=True)
+    train_rfs = train_data["root_first_seq"]
 
-    # dev_data = np.load(dev_processed_path, allow_pickle=True)
-    # dev_rfs = dev_data["root_first_seq"]
-    # rfs = list(train_rfs) + list(dev_rfs)
+    dev_data = np.load(dev_processed_path, allow_pickle=True)
+    dev_rfs = dev_data["root_first_seq"]
+    rfs = list(train_rfs) + list(dev_rfs)
 
-    # triplets = []
-    # for ast in tqdm(rfs):
-    #     rftriplet = []
-    #     ast[0].child_idx = 0
-    #     ast[0].node_triplet = str((0, 0, 0))
-    #     update_node_child_idx(ast[0])
-    #     get_node_triplet(ast[0])
-    #     rftriplet = [e.node_triplet for e in ast]
-    #     triplets.append(rftriplet)
-    # pos_vocab = Vocab(need_bos=False, file_path="node_triplet_dictionary_java.pt")
-    # pos_vocab.generate_dict(triplets)
+    triplets = []
+    for ast in tqdm(rfs):
+        rftriplet = []
+        ast[0].child_idx = 0
+        ast[0].node_triplet = str((0, 0, 0))
+        update_node_child_idx(ast[0])
+        get_node_triplet(ast[0])
+        rftriplet = [e.node_triplet for e in ast]
+        triplets.append(rftriplet)
+    pos_vocab = Vocab(need_bos=False, file_path=f"node_triplet_dictionary_{lang}.pt")
+    pos_vocab.generate_dict(triplets)
 
     print(f"split ast vocab size: {len(split_ast_vocab.w2i)} \n")
-    # print(f"ident vocab size: {len(ident_vocab.w2i)} \n")
     print(f"nl vocab size: {len(nl_vocab.w2i)} \n")
-    # print(f"pos vocab size: {pos_vocab.size()}")
+    print(f"pos vocab size: {pos_vocab.size()}")
