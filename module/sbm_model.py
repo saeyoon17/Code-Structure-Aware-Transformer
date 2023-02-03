@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from module.components import PositionalEncoding
 from .sbm_attn import Attention
 
-__all__ = ["Model"]
+__all__ = ["SBM"]
 
 
 class Transformer(nn.Module):
