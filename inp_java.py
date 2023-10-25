@@ -51,6 +51,7 @@ from collections import defaultdict
 
 result = defaultdict(lambda: defaultdict(lambda: []))
 import time
+
 start_time = time.time()
 for num_hop in [3, 5, 7]:
     for i in range(1):
@@ -73,17 +74,12 @@ for num_hop in [3, 5, 7]:
                 for start_node in paths.keys():
                     for end_node in paths[start_node].keys():
                         path = paths[start_node][end_node]
-                        if len(path) == num_hop and (
-                            int(start_node.split(":")[-1])
-                            < int(end_node.split(":")[-1])
-                        ):
+                        if len(path) == num_hop and (int(start_node.split(":")[-1]) < int(end_node.split(":")[-1])):
                             cands.append(path)
 
                 SAMPLE_NUM = min([10, len(cands)])
                 if SAMPLE_NUM > 0:
-                    idx1 = np.random.choice(
-                        range(len(cands)), size=SAMPLE_NUM, replace=False
-                    )
+                    idx1 = np.random.choice(range(len(cands)), size=SAMPLE_NUM, replace=False)
                     sample_cands = [cands[i] for i in idx1]
                     original_test_dataset[data_idx] = sample_cands
                 else:
@@ -93,7 +89,7 @@ for num_hop in [3, 5, 7]:
         acc = 0
         for e in whole:
             acc += len(e)
-        print(f'num_hop: {num_hop}, total data num: {acc}')
+        print(f"num_hop: {num_hop}, total data num: {acc}")
         continue
 
         # ## retrieve parent-child relationships
@@ -150,7 +146,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/java.py",
+                "./config/java.py",
                 "--g",
                 "0",
             ]
@@ -195,7 +191,7 @@ for num_hop in [3, 5, 7]:
             "java",
             config.max_src_len,
         )
-        state_path = "../csa-trans-test/outputs/java.pt"
+        state_path = "./outputs/java.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model = model.to("cuda")
@@ -276,8 +272,6 @@ for num_hop in [3, 5, 7]:
                 pred = model(x.to(device))
                 bsize = x.size(0)
                 pred = pred.reshape(bsize, 10000, -1)
-                # import ipdb
-                # ipdb.set_trace()
                 loss = criterion(pred, y.to(device).squeeze(-2))
                 loss.backward()
                 loss_acc += loss.item()
@@ -292,20 +286,13 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
-                print(
-                    f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}"
-                )
+                print(f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
                 model.train()
 
         # In[13]:
@@ -318,18 +305,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["csa-trans"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["csa-trans"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Treepos
 
@@ -338,7 +320,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/java_treepos.py",
+                "./config/java_treepos.py",
                 "--g",
                 "0",
             ]
@@ -375,7 +357,7 @@ for num_hop in [3, 5, 7]:
             shuffle=False,
             collate_fn=test_data_set.collect_fn,
         )
-        state_path = "../csa-trans-test/outputs/java_treepos.pt"
+        state_path = "./outputs/java_treepos.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -456,20 +438,13 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
-                print(
-                    f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}"
-                )
+                print(f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
                 model.train()
 
         # In[18]:
@@ -482,10 +457,7 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
@@ -502,7 +474,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/java_lap.py",
+                "./config/java_lap.py",
                 "--g",
                 "0",
             ]
@@ -542,7 +514,7 @@ for num_hop in [3, 5, 7]:
 
         # In[20]:
 
-        state_path = "../csa-trans-test/outputs/java_lap.pt"
+        state_path = "./outputs/java_lap.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -627,16 +599,11 @@ for num_hop in [3, 5, 7]:
                     # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
-                print(
-                    f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}"
-                )
+                print(f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
                 model.train()
 
         # In[24]:
@@ -649,18 +616,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["laplacian"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["laplacian"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Sequential
 
@@ -740,20 +702,13 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
-                print(
-                    f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}"
-                )
+                print(f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
                 model.train()
 
         # In[28]:
@@ -766,18 +721,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["sequential"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["sequential"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Triplet
 
@@ -786,7 +736,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/java_triplet.py",
+                "./config/java_triplet.py",
                 "--g",
                 "0",
             ]
@@ -826,7 +776,7 @@ for num_hop in [3, 5, 7]:
 
         # In[30]:
 
-        state_path = "../csa-trans-test/outputs/java_triplet.pt"
+        state_path = "./outputs/java_triplet.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -912,20 +862,13 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
-                print(
-                    f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}"
-                )
+                print(f"Epoch - {epoch}, Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
                 model.train()
 
         # In[34]:
@@ -938,10 +881,7 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
@@ -953,11 +893,3 @@ for num_hop in [3, 5, 7]:
     with open(f"result_java_{num_hop}.pkl", "wb") as f:
         pickle.dump(dict(result[num_hop]), f)
 print(result)
-import ipdb
-
-ipdb.set_trace()
-
-# In[ ]:
-
-
-# In[ ]:

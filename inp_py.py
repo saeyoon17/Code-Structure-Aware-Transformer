@@ -51,6 +51,7 @@ from collections import defaultdict
 
 result = defaultdict(lambda: defaultdict(lambda: []))
 import time
+
 start_time = time.time()
 for num_hop in [3, 5, 7]:
     for i in range(1):
@@ -73,16 +74,11 @@ for num_hop in [3, 5, 7]:
                 for start_node in paths.keys():
                     for end_node in paths[start_node].keys():
                         path = paths[start_node][end_node]
-                        if len(path) == num_hop and (
-                            int(start_node.split(":")[-1])
-                            < int(end_node.split(":")[-1])
-                        ):
+                        if len(path) == num_hop and (int(start_node.split(":")[-1]) < int(end_node.split(":")[-1])):
                             cands.append(path)
 
                 SAMPLE_NUM = min([10, len(cands)])
-                idx1 = np.random.choice(
-                    range(len(cands)), size=SAMPLE_NUM, replace=False
-                )
+                idx1 = np.random.choice(range(len(cands)), size=SAMPLE_NUM, replace=False)
                 sample_cands = [cands[i] for i in idx1]
                 original_test_dataset[data_idx] = sample_cands
 
@@ -91,7 +87,7 @@ for num_hop in [3, 5, 7]:
         acc = 0
         for e in whole:
             acc += len(e)
-        print(f'num_hop: {num_hop}, total data num: {acc}')
+        print(f"num_hop: {num_hop}, total data num: {acc}")
         continue
 
         # In[4]:
@@ -146,7 +142,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/python.py",
+                "./config/python.py",
                 "--g",
                 "0",
             ]
@@ -189,7 +185,7 @@ for num_hop in [3, 5, 7]:
             "python",
             config.max_src_len,
         )
-        state_path = "../csa-trans-test/outputs/python.pt"
+        state_path = "./outputs/python.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model = model.to("cuda")
@@ -285,10 +281,7 @@ for num_hop in [3, 5, 7]:
                     # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
@@ -307,18 +300,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         # print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["csa-trans"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["csa-trans"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Treepos
 
@@ -327,7 +315,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/python_treepos.py",
+                "./config/python_treepos.py",
                 "--g",
                 "0",
             ]
@@ -364,7 +352,7 @@ for num_hop in [3, 5, 7]:
             shuffle=False,
             collate_fn=test_data_set.collect_fn,
         )
-        state_path = "../csa-trans-test/outputs/python_treepos.pt"
+        state_path = "./outputs/python_treepos.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -381,7 +369,7 @@ for num_hop in [3, 5, 7]:
                 src_pes += src_pe
 
         # In[16]:
-#
+        #
         # whole = list(original_test_dataset.values())
         X = []  # the two embeddings
         Y = []  # intermediate vocabulary
@@ -442,14 +430,9 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
@@ -468,10 +451,7 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
@@ -488,7 +468,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/python_lap.py",
+                "./config/python_lap.py",
                 "--g",
                 "0",
             ]
@@ -528,7 +508,7 @@ for num_hop in [3, 5, 7]:
 
         # In[20]:
 
-        state_path = "../csa-trans-test/outputs/python_lap.pt"
+        state_path = "./outputs/python_lap.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -606,14 +586,9 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
@@ -632,18 +607,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         # print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["laplacian"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["laplacian"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Sequential
 
@@ -720,14 +690,9 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
@@ -746,18 +711,13 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
         # print(f"Total correct: {total_correct}")
         print(f"Accuracy: {total_correct / len(test_loader) / BATCH_SIZE}")
-        result[num_hop]["sequential"].append(
-            total_correct / len(test_loader) / BATCH_SIZE
-        )
+        result[num_hop]["sequential"].append(total_correct / len(test_loader) / BATCH_SIZE)
 
         # ## Triplet
 
@@ -766,7 +726,7 @@ for num_hop in [3, 5, 7]:
         args = parser.parse_args(
             [
                 "--config",
-                "../csa-trans-test/config/python_triplet.py",
+                "./config/python_triplet.py",
                 "--g",
                 "0",
             ]
@@ -806,7 +766,7 @@ for num_hop in [3, 5, 7]:
 
         # In[30]:
 
-        state_path = "../csa-trans-test/outputs/python_triplet.pt"
+        state_path = "./outputs/python_triplet.pt"
         state_dict = torch.load(state_path)
         model.load_state_dict(state_dict)
         model.eval()
@@ -889,14 +849,9 @@ for num_hop in [3, 5, 7]:
                     x, y = batch
                     pred = model(x.to(device))
                     bsize = x.size(0)
-                    # import ipdb
-                    # ipdb.set_trace()
                     total_correct += torch.sum(
                         torch.all(
-                            (
-                                torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                                == y.squeeze(-2).to("cuda")
-                            ),
+                            (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                             dim=-1,
                         )
                     )
@@ -915,10 +870,7 @@ for num_hop in [3, 5, 7]:
             bsize = x.size(0)
             total_correct += torch.sum(
                 torch.all(
-                    (
-                        torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2)
-                        == y.squeeze(-2).to("cuda")
-                    ),
+                    (torch.argmax(pred.reshape(bsize, 10000, -1), dim=-2) == y.squeeze(-2).to("cuda")),
                     dim=-1,
                 )
             )
@@ -930,11 +882,3 @@ for num_hop in [3, 5, 7]:
     with open(f"result_python_{num_hop}.pkl", "wb") as f:
         pickle.dump(dict(result[num_hop]), f)
 print(result)
-import ipdb
-
-ipdb.set_trace()
-
-# In[ ]:
-
-
-# In[ ]:
