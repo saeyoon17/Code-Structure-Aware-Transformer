@@ -1,6 +1,6 @@
 # Code-Structure-Aware-Transformer
 This is a replication package for CSA-Trans.
-Through the repository, you are able to run all experiments in "CSA-Trans: Code Structure Aware Positional Encoding for AST". To replicate the results, follow the following steps.
+Through the repository, you are able to run all experiments in "CSA-Trans: Code Structure Aware Transformer for AST". To replicate the results, follow the following steps.
 
 ## 1. Prepare dataset
 - If you want to build the dataset for yourself, first download Python and Java dataset from [dataset link](https://github.com/wasiahmad/NeuralCodeSum/tree/master/data) and put them inside /py and /java directories. Also, download each tree-sitter parser for [python](https://github.com/tree-sitter/tree-sitter-python) and [java](https://github.com/tree-sitter/tree-sitter-java) under directory named tree_sitter. The tree_sitter directory should be outside CSA-Trans directory. tree_sitter_parse.ipynb in each /py and /java guides through AST parsing for each languages, generating tree_sitter_python and tree_sitter_java directories.
