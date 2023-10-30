@@ -125,6 +125,7 @@ class FastASTDataSet(BaseASTDataSet):
             L = Ls[i][:max_src_len, :max_src_len]
 
             adj = torch.logical_or(L.eq(1), L.eq(0))
+            adj = torch.logical_or(L.eq(-1), adj)
             ast_seq = self.ast_data[i][0]
             nl = self.nl_data[i]
             num_node = min(len(root_first_seq), max_src_len)
